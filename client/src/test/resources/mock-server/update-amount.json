@@ -1,0 +1,17 @@
+{
+  "scenarioName": "Main",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "Amount updated",
+  "request": {
+    "urlPathPattern": "/account/\\d+",
+    "method": "POST",
+    "queryParameters": {
+      "value": {
+        "equalTo": "100"
+      }
+    }
+  },
+  "response": {
+    "status": 200
+  }
+}

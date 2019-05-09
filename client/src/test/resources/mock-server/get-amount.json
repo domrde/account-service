@@ -1,0 +1,15 @@
+{
+  "scenarioName": "Main",
+  "requiredScenarioState": "Amount updated",
+  "request": {
+    "urlPattern": "/account/\\d+",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": 100
+  }
+}

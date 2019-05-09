@@ -1,1 +1,5 @@
 rootProject.name = 'account-service'
+
+include 'server'
+
+include 'client'

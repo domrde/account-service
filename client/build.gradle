@@ -1,0 +1,13 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.4.RELEASE'
+    id 'java'
+}
+
+sourceCompatibility = '1.8'
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.1.4.RELEASE'
+    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock:2.1.1.RELEASE'
+}
