@@ -16,11 +16,11 @@ public class AmountWriter {
 
     public void writeAmount(Integer id, Long value) {
         String url = UriComponentsBuilder
-                .fromHttpUrl(targetHost + "/account/" + id)
+                .fromHttpUrl(targetHost + "/account/amount/" + id)
                 .queryParam("value", value)
                 .toUriString();
 
-        restTemplate.postForEntity(url, null, Void.class);
+        restTemplate.put(url, null, Void.class);
     }
 
 }

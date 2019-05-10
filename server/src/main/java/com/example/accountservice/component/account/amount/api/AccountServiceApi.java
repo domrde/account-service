@@ -1,4 +1,4 @@
-package com.example.accountservice.component.account.api;
+package com.example.accountservice.component.account.amount.api;
 
 public interface AccountServiceApi {
 

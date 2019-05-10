@@ -1,16 +1,14 @@
-package com.example.accountservice.component.account.repository;
+package com.example.accountservice.component.account.core.repository;
 
-import com.example.accountservice.component.account.dto.Account;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import com.example.accountservice.component.account.core.dto.Account;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
-
-import static com.example.accountservice.system.config.AppConfig.CACHE_NAME;
+import java.util.stream.Collectors;
 
 @Repository
 public class AccountRepository {
@@ -33,17 +31,20 @@ public class AccountRepository {
         };
     }
 
-    @CachePut(value = CACHE_NAME, key = "#id")
     @Transactional
-    public Optional<Account> addAmount(Integer id, Long value) {
-        jdbcTemplate.update("INSERT INTO " + TABLE_NAME + " AS a(id, value) VALUES (?, ?) " +
-                            "ON CONFLICT (id) DO UPDATE SET value = a.value + excluded.value", id, value);
-        return getAmount(id);
+    public void replace(List<Account> batch) {
+        String sql = "INSERT INTO " + TABLE_NAME + "(id, value) VALUES (?, ?) " +
+                     "ON CONFLICT (id) DO UPDATE SET value = excluded.value";
+
+        List<Object[]> args = batch.stream()
+                .map(op -> new Object[]{op.getId(), op.getValue()})
+                .collect(Collectors.toList());
+
+        jdbcTemplate.batchUpdate(sql, args);
     }
 
-    @Cacheable(value = CACHE_NAME, key = "#id")
     @Transactional(readOnly = true)
-    public Optional<Account> getAmount(Integer id) {
+    public Optional<Account> getAccount(Integer id) {
         return jdbcTemplate.query("SELECT * FROM " + TABLE_NAME + " WHERE id = ?", accountResultSetExtractor, id);
     }
 }

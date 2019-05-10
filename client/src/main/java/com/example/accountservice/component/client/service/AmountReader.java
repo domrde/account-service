@@ -16,7 +16,7 @@ public class AmountReader {
 
     public Long readAmount(Integer id) {
         String url = UriComponentsBuilder
-                .fromHttpUrl(targetHost + "/account/" + id)
+                .fromHttpUrl(targetHost + "/account/amount/" + id)
                 .toUriString();
 
         return restTemplate.getForEntity(url, Long.class).getBody();

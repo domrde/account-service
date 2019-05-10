@@ -8,8 +8,11 @@ sourceCompatibility = '1.8'
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.1.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE'
-    implementation 'org.springframework.boot:spring-boot-starter-cache:2.1.4.RELEASE'
+    
     implementation 'com.github.ben-manes.caffeine:caffeine:2.7.0'
+
+    implementation 'org.springframework.kafka:spring-kafka:2.2.5.RELEASE'
+
 
     // metrics
     implementation 'org.springframework.boot:spring-boot-starter-actuator:2.1.4.RELEASE'

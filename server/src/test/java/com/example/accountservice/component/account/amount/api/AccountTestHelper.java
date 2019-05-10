@@ -1,4 +1,4 @@
-package com.example.accountservice.component.account.api;
+package com.example.accountservice.component.account.amount.api;
 
 import com.example.accountservice.common.URLs;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class AccountTestHelper {
     public long getAmount(Integer id) {
         String responseAsString;
         try {
-            responseAsString = mockMvc.perform(get(URLs.ACCOUNT_URL + "/" + id))
+            responseAsString = mockMvc.perform(get(URLs.ACCOUNT_AMOUNT_URL + "/" + id))
                     .andExpect(status().isOk())
                     .andReturn()
                     .getResponse()
@@ -32,7 +32,7 @@ public class AccountTestHelper {
 
     public void addAmount(Integer id, Long value) {
         try {
-            mockMvc.perform(post(URLs.ACCOUNT_URL + "/" + id).param("value", String.valueOf(value)))
+            mockMvc.perform(post(URLs.ACCOUNT_AMOUNT_URL + "/" + id).param("value", String.valueOf(value)))
                     .andExpect(status().isOk());
         } catch (Exception e) {
             throw new RuntimeException(e);

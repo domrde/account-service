@@ -1,12 +1,12 @@
-package com.example.accountservice.component.account.dto;
+package com.example.accountservice.component.account.core.dto;
 
 import java.util.Objects;
 
 public class Account {
 
-    private Integer id;
+    private final Integer id;
 
-    private Long value;
+    private final Long value;
 
     public Account(Integer id, Long value) {
         this.id = id;
