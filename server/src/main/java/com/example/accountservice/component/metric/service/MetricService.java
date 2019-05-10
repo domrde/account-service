@@ -27,7 +27,7 @@ public class MetricService {
         String graphQuery = String.format("name,%s,:eq,statistic,count,:eq,:and", metricName);
 
         String uriString = UriComponentsBuilder
-                .fromHttpUrl(atlasUriString)
+                .fromHttpUrl(atlasUriString + "/graph")
                 .queryParam("s", startTimeQuery)
                 .queryParam("tz", "Europe/Moscow")
                 .queryParam("q", graphQuery)

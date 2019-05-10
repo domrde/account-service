@@ -1,6 +1,6 @@
 package com.example.accountservice.component.account.api;
 
-import com.example.accountservice.component.account.service.AccountService;
+import com.example.accountservice.component.account.service.BufferedAccountService;
 import com.example.accountservice.component.metric.service.MetricService;
 import io.micrometer.core.annotation.Timed;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +11,9 @@ import static com.example.accountservice.common.URLs.ACCOUNT_URL;
 @RequestMapping(ACCOUNT_URL)
 public class AccountController implements AccountServiceApi {
 
-    private final AccountService accountService;
+    private final BufferedAccountService accountService;
 
-    public AccountController(AccountService accountService) {
+    public AccountController(BufferedAccountService accountService) {
         this.accountService = accountService;
     }
 

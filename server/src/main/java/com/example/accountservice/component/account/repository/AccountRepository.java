@@ -1,13 +1,16 @@
 package com.example.accountservice.component.account.repository;
 
 import com.example.accountservice.component.account.dto.Account;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+
+import static com.example.accountservice.system.config.AppConfig.CACHE_NAME;
 
 @Repository
 public class AccountRepository {
@@ -16,10 +19,11 @@ public class AccountRepository {
 
     private final ResultSetExtractor<Optional<Account>> accountResultSetExtractor;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public AccountRepository() {
+    public AccountRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+
         accountResultSetExtractor = rs -> {
             if (rs.next()) {
                 return Optional.of(new Account(rs.getInt("id"), rs.getLong("value")));
@@ -29,14 +33,17 @@ public class AccountRepository {
         };
     }
 
+    @CachePut(value = CACHE_NAME, key = "#id")
     @Transactional
-    public void addAmount(Integer id, Long value) {
+    public Optional<Account> addAmount(Integer id, Long value) {
         jdbcTemplate.update("INSERT INTO " + TABLE_NAME + " AS a(id, value) VALUES (?, ?) " +
                             "ON CONFLICT (id) DO UPDATE SET value = a.value + excluded.value", id, value);
+        return getAmount(id);
     }
 
+    @Cacheable(value = CACHE_NAME, key = "#id")
     @Transactional(readOnly = true)
-    public Optional<Account> retrieve(Integer id) {
+    public Optional<Account> getAmount(Integer id) {
         return jdbcTemplate.query("SELECT * FROM " + TABLE_NAME + " WHERE id = ?", accountResultSetExtractor, id);
     }
 }
