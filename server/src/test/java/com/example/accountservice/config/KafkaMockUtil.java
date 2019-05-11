@@ -1,6 +1,6 @@
 package com.example.accountservice.config;
 
-import com.example.accountservice.component.account.core.dto.AccountOperation;
+import com.example.accountservice.component.account.core.dto.Account;
 import com.example.accountservice.component.account.core.service.AccountService;
 import org.springframework.kafka.core.KafkaTemplate;
 
@@ -13,9 +13,9 @@ public class KafkaMockUtil {
 
     public static void mockRedirectToAccountService(KafkaTemplate<Object, Object> kafkaTemplate,
                                                     AccountService accountService) {
-        when(kafkaTemplate.send(anyString(), any(AccountOperation.class))).thenAnswer(invocation -> {
-            AccountOperation operation = invocation.getArgument(1);
-            accountService.applyAccountOperation(singletonList(operation));
+        when(kafkaTemplate.send(anyString(), any(Account.class))).thenAnswer(invocation -> {
+            Account account = invocation.getArgument(1);
+            accountService.applyAccountOperation(singletonList(account));
             return null; // not used
         });
     }

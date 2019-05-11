@@ -1,5 +1,8 @@
 package com.example.accountservice.component.account.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class Account {
@@ -8,7 +11,9 @@ public class Account {
 
     private final Long value;
 
-    public Account(Integer id, Long value) {
+    @JsonCreator
+    public Account(@JsonProperty("id") Integer id,
+                   @JsonProperty("value") Long value) {
         this.id = id;
         this.value = value;
     }

@@ -3,6 +3,7 @@ package com.example.accountservice.component.account.core.service;
 import com.example.accountservice.common.exception.InternalException;
 import com.example.accountservice.component.account.core.dto.Account;
 import com.example.accountservice.component.account.core.dto.AccountOperation;
+import com.example.accountservice.component.account.core.repository.AccountRepository;
 import com.example.accountservice.system.config.KafkaConfig;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,16 +19,16 @@ public class AccountService {
 
     private final KafkaTemplate<Object, Object> kafkaTemplate;
 
-    private final AccountOperationService accountOperationService;
+    private final AccountRepository accountRepository;
 
     private final AtomicLong unreadCounter = new AtomicLong();
 
     public AccountService(AccountCache accountCache,
                           KafkaTemplate<Object, Object> kafkaTemplate,
-                          AccountOperationService accountOperationService) {
+                          AccountRepository accountRepository) {
         this.accountCache = accountCache;
         this.kafkaTemplate = kafkaTemplate;
-        this.accountOperationService = accountOperationService;
+        this.accountRepository = accountRepository;
     }
 
     public Account getAccount(Integer id) {
@@ -40,16 +41,18 @@ public class AccountService {
             throw new InternalException("Operation can't be performed due to high load");
         }
 
-        // TODO: switch places and send not an operation to kafka but already updated account
-        accountOperationService.applyFast(operation);
-        kafkaTemplate.send(KafkaConfig.TOPIC_NAME, operation);
+        accountCache.compute(operation.getId(), existingAccount -> {
+            Account updated = operation.apply(existingAccount);
+            kafkaTemplate.send(KafkaConfig.TOPIC_NAME, updated);
+            return updated;
+        });
     }
 
-    // TODO: add cache population after restart
+    // TODO: add cache population after restart, ignore any requests during that time
     @KafkaListener(topics = KafkaConfig.TOPIC_NAME)
-    public void applyAccountOperation(List<AccountOperation> operations) {
-        unreadCounter.updateAndGet(value -> value - operations.size());
-        accountOperationService.applyLong(operations);
+    public void applyAccountOperation(List<Account> updatedAccounts) {
+        unreadCounter.updateAndGet(value -> value - updatedAccounts.size());
+        accountRepository.batchReplace(updatedAccounts);
     }
 
 }

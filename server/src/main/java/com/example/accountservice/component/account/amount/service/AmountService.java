@@ -1,6 +1,6 @@
 package com.example.accountservice.component.account.amount.service;
 
-import com.example.accountservice.component.account.operation.dto.AddAccountValueOperation;
+import com.example.accountservice.component.account.core.dto.AddAccountValueOperation;
 import com.example.accountservice.component.account.core.service.AccountService;
 import org.springframework.stereotype.Service;
 
@@ -20,4 +20,5 @@ public class AmountService {
     public void addAmount(Integer id, Long value) {
         accountService.bufferAccountOperation(new AddAccountValueOperation(id, value));
     }
+
 }

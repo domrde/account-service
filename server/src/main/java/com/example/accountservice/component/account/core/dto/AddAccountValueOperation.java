@@ -1,8 +1,4 @@
-package com.example.accountservice.component.account.operation.dto;
-
-import com.example.accountservice.component.account.core.dto.AccountOperation;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+package com.example.accountservice.component.account.core.dto;
 
 import java.util.Objects;
 
@@ -12,13 +8,17 @@ public class AddAccountValueOperation implements AccountOperation {
 
     private final Long value;
 
-    @JsonCreator
-    public AddAccountValueOperation(@JsonProperty("id") Integer id,
-                                    @JsonProperty("value") Long value) {
+    public AddAccountValueOperation(Integer id, Long value) {
         this.id = id;
         this.value = value;
     }
 
+    @Override
+    public Account apply(Account existing) {
+        return new Account(existing.getId(), existing.getValue() + getValue());
+    }
+
+    @Override
     public Integer getId() {
         return id;
     }
