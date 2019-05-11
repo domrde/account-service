@@ -2,7 +2,7 @@
   "scenarioName": "Main",
   "requiredScenarioState": "Amount updated",
   "request": {
-    "urlPattern": "/account/\\d+",
+    "urlPattern": "/account/amount/\\d+",
     "method": "GET"
   },
   "response": {

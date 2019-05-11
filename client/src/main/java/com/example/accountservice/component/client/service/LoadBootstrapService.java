@@ -71,7 +71,7 @@ public class LoadBootstrapService {
         CompletableFuture
                 .runAsync(
                         () -> {
-                            long randomAmount = ThreadLocalRandom.current().nextLong(500);
+                            long randomAmount = ThreadLocalRandom.current().nextLong(-500, 500);
                             amountWriter.writeAmount(idHolder.getRandomId(), randomAmount);
                         },
                         executorService

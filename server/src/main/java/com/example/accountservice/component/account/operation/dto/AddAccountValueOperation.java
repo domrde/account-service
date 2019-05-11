@@ -1,5 +1,6 @@
-package com.example.accountservice.component.account.core.dto.operation;
+package com.example.accountservice.component.account.operation.dto;
 
+import com.example.accountservice.component.account.core.dto.AccountOperation;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -3,8 +3,8 @@
   "requiredScenarioState": "Started",
   "newScenarioState": "Amount updated",
   "request": {
-    "urlPathPattern": "/account/\\d+",
-    "method": "POST",
+    "urlPathPattern": "/account/amount/\\d+",
+    "method": "PUT",
     "queryParameters": {
       "value": {
         "equalTo": "100"

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,12 +33,12 @@ public class AccountRepository {
     }
 
     @Transactional
-    public void replace(List<Account> batch) {
-        String sql = "INSERT INTO " + TABLE_NAME + "(id, value) VALUES (?, ?) " +
-                     "ON CONFLICT (id) DO UPDATE SET value = excluded.value";
+    public void updateValue(Map<Integer, Long> batch) {
+        String sql = "INSERT INTO " + TABLE_NAME + " AS a(id, value) VALUES (?, ?) " +
+                     "ON CONFLICT (id) DO UPDATE SET value = a.value + excluded.value";
 
-        List<Object[]> args = batch.stream()
-                .map(op -> new Object[]{op.getId(), op.getValue()})
+        List<Object[]> args = batch.entrySet().stream()
+                .map(op -> new Object[]{op.getKey(), op.getValue()})
                 .collect(Collectors.toList());
 
         jdbcTemplate.batchUpdate(sql, args);
