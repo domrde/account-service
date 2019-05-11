@@ -2,6 +2,7 @@ package com.example.accountservice.component.account.core.service;
 
 import com.example.accountservice.IntegrationTest;
 import com.example.accountservice.component.account.core.dto.Account;
+import com.example.accountservice.component.account.core.dto.AccountWithOffset;
 import com.example.accountservice.component.account.core.repository.AccountRepository;
 import com.example.accountservice.component.account.core.dto.AddAccountValueOperation;
 import com.example.accountservice.config.KafkaMockUtil;
@@ -58,7 +59,7 @@ public class AccountServiceRetrievalIT {
 
     @Test
     public void valueShouldBeReturnedIfItIsInDB() {
-        accountRepository.batchReplace(singletonList(new Account(accountId, 100L)));
+        accountRepository.batchReplace(singletonList(new AccountWithOffset(accountId, 100L, 1L)));
 
         Account account = accountService.getAccount(accountId);
 
@@ -78,7 +79,7 @@ public class AccountServiceRetrievalIT {
 
     @Test
     public void valueInCacheShouldBeIncrementedBasedOnDBValueIfCacheIsEmpty() {
-        accountRepository.batchReplace(singletonList(new Account(accountId, 100L)));
+        accountRepository.batchReplace(singletonList(new AccountWithOffset(accountId, 100L, 1L)));
         accountService.bufferAccountOperation(new AddAccountValueOperation(accountId, 100L));
 
         Account account = accountService.getAccount(accountId);
@@ -89,7 +90,7 @@ public class AccountServiceRetrievalIT {
 
     @Test
     public void valueInCacheShouldBeIncrementedBasedOnCacheValue() {
-        accountRepository.batchReplace(singletonList(new Account(accountId, 100L)));
+        accountRepository.batchReplace(singletonList(new AccountWithOffset(accountId, 100L, 1L)));
         accountService.bufferAccountOperation(new AddAccountValueOperation(accountId, 100L));
         accountService.bufferAccountOperation(new AddAccountValueOperation(accountId, 100L));
 

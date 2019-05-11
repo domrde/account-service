@@ -20,7 +20,11 @@ public class AmountWriter {
                 .queryParam("value", value)
                 .toUriString();
 
-        restTemplate.put(url, null, Void.class);
+        try {
+            restTemplate.put(url, null, Void.class);
+        } catch (Exception e) {
+            // exceptions should not stop the load
+        }
     }
 
 }

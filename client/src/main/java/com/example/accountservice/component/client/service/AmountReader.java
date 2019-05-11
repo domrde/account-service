@@ -19,7 +19,12 @@ public class AmountReader {
                 .fromHttpUrl(targetHost + "/account/amount/" + id)
                 .toUriString();
 
-        return restTemplate.getForEntity(url, Long.class).getBody();
+        try {
+            return restTemplate.getForEntity(url, Long.class).getBody();
+        } catch (Exception e) {
+            // exceptions should not stop the load
+            return null;
+        }
     }
 
 }

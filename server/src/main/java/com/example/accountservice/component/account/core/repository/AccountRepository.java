@@ -1,6 +1,7 @@
 package com.example.accountservice.component.account.core.repository;
 
 import com.example.accountservice.component.account.core.dto.Account;
+import com.example.accountservice.component.account.core.dto.AccountWithOffset;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
@@ -32,12 +33,14 @@ public class AccountRepository {
     }
 
     @Transactional
-    public void batchReplace(List<Account> updatedAccounts) {
-        String sql = "INSERT INTO " + TABLE_NAME + " AS a(id, value) VALUES (?, ?) " +
-                     "ON CONFLICT (id) DO UPDATE SET value = excluded.value";
+    public void batchReplace(List<AccountWithOffset> updatedAccounts) {
+        String sql = "INSERT INTO " + TABLE_NAME + " AS a(id, value, version) VALUES (?, ?, ?) " +
+                     "ON CONFLICT (id) DO UPDATE " +
+                     " SET value = excluded.value, version = excluded.version " +
+                     " WHERE excluded.version > a.version";
 
         List<Object[]> args = updatedAccounts.stream()
-                .map(op -> new Object[]{op.getId(), op.getValue()})
+                .map(op -> new Object[]{op.getId(), op.getValue(), op.getOffset()})
                 .collect(Collectors.toList());
 
         jdbcTemplate.batchUpdate(sql, args);

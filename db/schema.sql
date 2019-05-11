@@ -1,5 +1,6 @@
 CREATE TABLE account
 (
-    id    INTEGER UNIQUE,
-    value BIGINT
+    id      INTEGER UNIQUE,
+    value   BIGINT,
+    version BIGINT
 );

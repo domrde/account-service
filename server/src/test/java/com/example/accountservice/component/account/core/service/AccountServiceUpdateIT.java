@@ -2,8 +2,9 @@ package com.example.accountservice.component.account.core.service;
 
 import com.example.accountservice.IntegrationTest;
 import com.example.accountservice.component.account.core.dto.Account;
-import com.example.accountservice.component.account.core.repository.AccountRepository;
+import com.example.accountservice.component.account.core.dto.AccountWithOffset;
 import com.example.accountservice.component.account.core.dto.AddAccountValueOperation;
+import com.example.accountservice.component.account.core.repository.AccountRepository;
 import com.example.accountservice.config.KafkaMockUtil;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,11 +21,9 @@ import java.util.Optional;
 
 import static com.example.accountservice.config.TestConfig.NO_KAFKA_PROFILE;
 import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
@@ -66,7 +65,7 @@ public class AccountServiceUpdateIT {
 
     @Test
     public void existingAccountShouldHaveItsValueUpdated() {
-        accountRepository.batchReplace(singletonList(new Account(accountId, 100L)));
+        accountRepository.batchReplace(singletonList(new AccountWithOffset(accountId, 100L, 1L)));
         accountService.bufferAccountOperation(new AddAccountValueOperation(accountId, 100L));
 
         Optional<Account> accountOpt = accountRepository.getAccount(accountId);
