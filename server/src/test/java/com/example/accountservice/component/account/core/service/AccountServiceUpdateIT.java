@@ -1,19 +1,15 @@
 package com.example.accountservice.component.account.core.service;
 
+import com.example.accountservice.BaseIT;
 import com.example.accountservice.IntegrationTest;
 import com.example.accountservice.component.account.core.dto.Account;
 import com.example.accountservice.component.account.core.dto.AccountWithOffset;
-import com.example.accountservice.component.account.core.dto.AddAccountValueOperation;
+import com.example.accountservice.component.account.core.operation.AddAccountValueOperation;
 import com.example.accountservice.component.account.core.repository.AccountRepository;
-import com.example.accountservice.config.KafkaMockUtil;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -30,27 +26,13 @@ import static org.mockito.Mockito.verify;
 @IntegrationTest
 @ActiveProfiles(NO_KAFKA_PROFILE)
 @RunWith(SpringRunner.class)
-public class AccountServiceUpdateIT {
-
-    @Autowired
-    private KafkaTemplate<Object, Object> kafkaTemplate;
+public class AccountServiceUpdateIT extends BaseIT {
 
     @Autowired
     private AccountService accountService;
 
     @SpyBean
     private AccountRepository accountRepository;
-
-    @Rule
-    public TestName testName = new TestName();
-
-    private Integer accountId;
-
-    @Before
-    public void init() {
-        accountId = testName.getMethodName().hashCode();
-        KafkaMockUtil.mockRedirectToAccountService(kafkaTemplate, accountService);
-    }
 
     @Test
     public void accountShouldBeCreatedIfItWasNotInDBForUpdate() {
@@ -74,4 +56,5 @@ public class AccountServiceUpdateIT {
         assertEquals(new Account(accountId, 200L), accountOpt.get());
         verify(accountRepository, atLeastOnce()).batchReplace(anyList());
     }
+
 }

@@ -16,7 +16,7 @@ public class TestConfig {
     // @MockBean marks context as dirty, but context reload is not required for tests that don't use kafka
     @Profile(NO_KAFKA_PROFILE)
     @Bean
-    public KafkaTemplate<Object, Object> kafkaTemplate() {
+    public KafkaTemplate kafkaTemplate() {
         return Mockito.mock(KafkaTemplate.class, doesNothing());
     }
 

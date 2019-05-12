@@ -6,32 +6,36 @@ import org.springframework.context.event.EventListener;
 import org.springframework.kafka.event.ListenerContainerIdleEvent;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+
+/**
+ * Before new requests' processing can be started all messages that were in kafka before start of application
+ * should be processed. That's why that Blocker waits for all concurrent kafka listeners to send Idle event.
+ * Idle event is sent when listener didn't receive messages for spring.kafka.listener.idleEventInterval millis.
+ */
 @Service
 public class RequestProcessingBlocker {
 
     public static final String KAFKA_LISTENER_ID = "account-service";
 
-    private final CountDownLatch startConsumingRequests;
+    private final Integer listenersNumber;
+
+    private final Set<String> idleConsumers = ConcurrentHashMap.newKeySet();
 
     public RequestProcessingBlocker(@Value("${spring.kafka.listener.concurrency:0}") Integer listenersNumber) {
-        this.startConsumingRequests = new CountDownLatch(listenersNumber);
+        this.listenersNumber = listenersNumber;
     }
 
     @EventListener(condition = "event.listenerId.startsWith('" + KAFKA_LISTENER_ID + "-')")
     public void eventHandler(ListenerContainerIdleEvent event) {
-        startConsumingRequests.countDown();
+        idleConsumers.add(event.getListenerId());
     }
 
     public void assertCanStartProcessing() {
-        try {
-            if (!startConsumingRequests.await(1, TimeUnit.SECONDS)) {
-                throw new ServiceUnavailableException("Operation can't be performed due to service startup");
-            }
-        } catch (InterruptedException e) {
-            throw new ServiceUnavailableException("Operation can't be performed due to service startup", e);
+        if (idleConsumers.size() != listenersNumber) {
+            throw new ServiceUnavailableException("Operation can't be performed due to service startup");
         }
     }
 }

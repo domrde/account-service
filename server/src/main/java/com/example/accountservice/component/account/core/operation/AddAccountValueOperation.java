@@ -1,4 +1,6 @@
-package com.example.accountservice.component.account.core.dto;
+package com.example.accountservice.component.account.core.operation;
+
+import com.example.accountservice.component.account.core.dto.Account;
 
 import java.util.Objects;
 

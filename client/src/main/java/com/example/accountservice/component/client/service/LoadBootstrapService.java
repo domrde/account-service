@@ -1,6 +1,8 @@
 package com.example.accountservice.component.client.service;
 
 import com.example.accountservice.component.client.util.IdRangeParsingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +16,8 @@ import java.util.stream.IntStream;
 @Service
 public class LoadBootstrapService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoadBootstrapService.class);
+
     private final Boolean autoStartLoad;
 
     private final Integer readersNumber;
@@ -21,6 +25,8 @@ public class LoadBootstrapService {
     private final Integer writersNumber;
 
     private final String targetHost;
+
+    private final String idRangeString;
 
     private final IdRangeParsingUtils.IdHolder idHolder;
 
@@ -39,6 +45,7 @@ public class LoadBootstrapService {
         this.readersNumber = readersNumber;
         this.writersNumber = writersNumber;
         this.targetHost = targetHost;
+        this.idRangeString = idRangeString;
         this.idHolder = IdRangeParsingUtils.parseIdRangeString(idRangeString);
         this.restTemplate = restTemplate;
         this.executorService = executorService;
@@ -47,6 +54,9 @@ public class LoadBootstrapService {
     @PostConstruct
     public void start() {
         if (autoStartLoad) {
+            LOGGER.info("Applying load of {} writers, {} readers on range of ids {} to host {}",
+                    writersNumber, readersNumber, idRangeString, targetHost
+            );
             applyLoad();
         }
     }

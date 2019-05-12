@@ -1,0 +1,43 @@
+version: '3.7'
+services:
+
+  db:
+    build: ./db
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+
+  atlas:
+    build: ./atlas
+    ports:
+      - "7101:7101"
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  server:
+    build: ./server
+    depends_on:
+      - db
+      - kafka
+      - atlas
+    environment:
+      - PGHOST=db
+      - PGPASSWORD=postgres
+      - KAFKA_HOST=kafka
+      - ATLAS_HOST=atlas
+    ports:
+      - "8080:8080"

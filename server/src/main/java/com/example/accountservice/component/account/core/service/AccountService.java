@@ -1,8 +1,9 @@
 package com.example.accountservice.component.account.core.service;
 
+import com.example.accountservice.common.exception.InternalException;
 import com.example.accountservice.common.exception.ServiceUnavailableException;
 import com.example.accountservice.component.account.core.dto.Account;
-import com.example.accountservice.component.account.core.dto.AccountOperation;
+import com.example.accountservice.component.account.core.operation.AccountOperation;
 import com.example.accountservice.component.account.core.dto.AccountWithOffset;
 import com.example.accountservice.component.account.core.repository.AccountRepository;
 import com.example.accountservice.system.config.KafkaConfig;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.example.accountservice.component.account.core.service.RequestProcessingBlocker.KAFKA_LISTENER_ID;
@@ -44,6 +46,8 @@ public class AccountService {
     }
 
     public Account getAccount(Integer id) {
+        requestProcessingBlocker.assertCanStartProcessing();
+
         return accountCache.getAccount(id);
     }
 
@@ -57,15 +61,23 @@ public class AccountService {
 
         accountCache.compute(operation.getId(), existingAccount -> {
             Account updated = operation.apply(existingAccount);
-            kafkaTemplate.send(KafkaConfig.TOPIC_NAME, updated);
+            bufferUpdatedAccount(updated);
             return updated;
         });
+    }
+
+    private void bufferUpdatedAccount(Account account) {
+        try {
+            kafkaTemplate.send(KafkaConfig.TOPIC_NAME, account).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new InternalException("Unable to buffer updated account " + account, e);
+        }
     }
 
     @KafkaListener(id = KAFKA_LISTENER_ID, topics = KafkaConfig.TOPIC_NAME)
     public void applyAccountOperation(List<Account> updatedAccounts,
                                       @Header(KafkaHeaders.OFFSET) List<Long> offsets) {
-        unreadCounter.updateAndGet(value -> value > 0 ? value - updatedAccounts.size() : value);
+        unreadCounter.updateAndGet(value -> Math.max(0, value - updatedAccounts.size()));
 
         List<AccountWithOffset> accounts = new ArrayList<>();
         for (int i = 0; i < updatedAccounts.size(); i++) {

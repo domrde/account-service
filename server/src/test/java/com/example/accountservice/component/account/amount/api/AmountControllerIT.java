@@ -1,5 +1,6 @@
 package com.example.accountservice.component.account.amount.api;
 
+import com.example.accountservice.BaseIT;
 import com.example.accountservice.IntegrationTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 @IntegrationTest
 @ActiveProfiles(NO_KAFKA_PROFILE)
 @RunWith(SpringRunner.class)
-public class AmountControllerIT {
+public class AmountControllerIT extends BaseIT {
 
     @Autowired
     private AmountControllerTestHelper amountControllerTestHelper;

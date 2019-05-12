@@ -3,6 +3,7 @@ package com.example.accountservice.config;
 import com.example.accountservice.component.account.core.dto.Account;
 import com.example.accountservice.component.account.core.service.AccountService;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -20,7 +21,7 @@ public class KafkaMockUtil {
         when(kafkaTemplate.send(anyString(), any(Account.class))).thenAnswer(invocation -> {
             Account account = invocation.getArgument(1);
             accountService.applyAccountOperation(singletonList(account), singletonList(offset.incrementAndGet()));
-            return null; // not used
+            return new AsyncResult<>(null); // not used
         });
     }
 

@@ -1,6 +1,6 @@
 package com.example.accountservice.component.account.amount.service;
 
-import com.example.accountservice.component.account.core.dto.AddAccountValueOperation;
+import com.example.accountservice.component.account.core.operation.AddAccountValueOperation;
 import com.example.accountservice.component.account.core.service.AccountService;
 import org.springframework.stereotype.Service;
 
